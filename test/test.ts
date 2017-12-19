@@ -17,19 +17,18 @@ test('it splits an ArrayBuffer to tiny little pieces', (t: any) => {
 
   return Splinter.splitArrayBuffer(ab, size)
     .then(result => {
-      t.equals(result.length, Math.ceil(ab.byteLength / size))
+
+      // Given the example Array buffer there should be 2 keys.
+      // The first is the MD5 of 256k 0s, the other is 249k'ish 0s
+      t.ok(hasKey('fe52e3ab6381cf6cc34d57bd28a6b2e0', result))
+      t.ok(hasKey('25bfe113bc9eb27b2ed004e8378fdc30', result))
     })
 })
 
-test('it reassembles the file from the peices', (t: any) => {
-  const ab = new ArrayBuffer(1024 * 1024 * 10) // 1Mb
+//
+// Support
+//
 
-  return Splinter.splitArrayBuffer(ab, 256000)
-    .then(chunks => {
-      return Splinter.combineChunks(chunks)
-    })
-    .then(reconstructedAB => {
-      console.log(reconstructedAB)
-      t.ok(true)
-    })
-})
+function hasKey (key: string, obj: object): boolean {
+  return !(key in Object.keys(obj))
+}
